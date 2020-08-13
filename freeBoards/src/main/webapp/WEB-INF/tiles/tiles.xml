@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	<!--// Default Layout  -->
+	<definition name="libraries" template="/WEB-INF/jsp/view/layout/includeLibraries.jsp">
+		<put-attribute name="includeLibraries" value="" />
+	</definition>
+	
+	<!--// Default Layout  -->
+	<definition name="default" template="/WEB-INF/jsp/view/layout/default-layout.jsp">
+		<put-attribute name="left" value="/WEB-INF/jsp/view/layout/left.jsp" />
+		<put-attribute name="header" value="/WEB-INF/jsp/view/layout/header.jsp" />
+		<put-attribute name="body" value="" />
+	</definition>
+	
+	<!--// Empty Layout  -->
+	<definition name="empty" template="/WEB-INF/jsp/view/layout/empty-layout.jsp">
+		<put-attribute name="body" value="" />
+	</definition>
+			
+	<!--// 오류 페이지 -->
+<!-- 	<definition name="error/error" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/error/error.jsp"/>
+	</definition>
+	<definition name="error/error404" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/error/error404.jsp"/>
+	</definition>
+	<definition name="error/error500" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/error/error500.jsp"/>
+	</definition> -->
+	<!-- 오류 페이지 //-->
+		
+	<!--// 기본 -->	
+	<definition name="*/*Ajax" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}Ajax.jsp" />
+	</definition>
+	
+	<definition name="*/*/*Ajax" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}Ajax.jsp" />
+	</definition>
+	
+	<definition name="*/*/*/*Ajax" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}Ajax.jsp" />
+	</definition>
+	
+	<definition name="*/*Pop" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}Pop.jsp" />
+	</definition>
+	
+	<definition name="*/*/*Pop" extends="empty">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}Pop.jsp" />
+	</definition>
+	
+	<definition name="*/*" extends="default">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="*/*/*" extends="default">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="*/*/*/*" extends="default">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<!-- 기본 //-->
+	
+	<!--  로그인  -->
+	<definition name="/login/login" extends="default">
+		<put-attribute name="left" value="" />
+		<put-attribute name="header" value="" />
+		<put-attribute name="body" value="/WEB-INF/jsp/login/login.jsp" />
+	</definition>
+	
+	<!--  회원가입  -->
+	<definition name="/join/join" extends="default">
+		<put-attribute name="left" value="" />
+		<put-attribute name="header" value="" />
+		<put-attribute name="body" value="/WEB-INF/jsp/join/join.jsp" />
+	</definition>
+	
+	<!--  인증처리결과  -->
+	<definition name="/join/authenticate" extends="default">
+		<put-attribute name="left" value="" />
+		<put-attribute name="header" value="" />
+		<put-attribute name="body" value="/WEB-INF/jsp/join/authenticate.jsp" />
+	</definition>
+
+	<!--  가입 완료 후  -->
+	<definition name="/join/joinComplete" extends="default">
+		<put-attribute name="left" value="" />
+		<put-attribute name="header" value="" />
+		<put-attribute name="body" value="/WEB-INF/jsp/join/joinComplete.jsp" />
+	</definition>
+
+	<!--  등록정보 초기화 페이지  -->
+	<definition name="/join/resetLoginInfo" extends="default">
+		<put-attribute name="left" value="" />
+		<put-attribute name="header" value="" />
+		<put-attribute name="body" value="/WEB-INF/jsp/join/resetLoginInfo.jsp" />
+	</definition>
+
+</tiles-definitions>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.devbada.freeBoards.mapper.AnonyBoardMapper">
+	<!-- ===================== -->
+	<!-- 게시글 목록의 전체 수 조회 -->
+	<!-- @author minam.cho -->
+	<!-- ===================== -->
+	<select id="selectAnonyBoardDtlListCount"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyBoardDtlPVO"
+		resultType="integer">
+		SELECT /* AnonyMembersMapper.selectAnonyBoardDtlListCount */
+			COUNT(*) AS CNT
+		FROM
+			ANONY_BOARD_DTL A
+		WHERE
+			BM_ID = #{bmId}
+	</select>
+	
+	<!-- ================= -->
+	<!-- 게시글 목록을 조회 -->
+	<!-- @author minam.cho -->
+	<!-- ================= -->
+	<select id="selectAnonyBoardDtlList"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyBoardDtlPVO"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyBoardDtlRVO">
+		SELECT
+			P.*
+		FROM (
+			SELECT
+					T.*
+					, ROWNUM AS RNUM
+				FROM (
+					SELECT /* AnonyMembersMapper.selectAnonyBoardDtlList */
+						BD_ID,
+						BM_ID,
+						PARENT_BD_ID,
+						<![CDATA[
+							LPAD(' ', 2*(LEVEL-1)) || TITLE AS TITLE, --레벨별 들여쓰기
+						]]>
+						REG_ID,
+						(SELECT NAME FROM ANONY_MEMBERS WHERE MEM_ID = A.REG_ID) AS NAME,
+						(SELECT NICK_NAME FROM ANONY_MEMBERS WHERE MEM_ID = A.REG_ID) AS NICK_NAME,
+						GRP,
+						REF_DEPTH,
+						NOTICE_YN,
+						AGREE_CNT,
+						OPPOSITE_CNT,
+						READ_CNT,
+						REG_DT,
+						UPD_DT
+					FROM
+						ANONY_BOARD_DTL A
+					WHERE
+						BM_ID = #{bmId}
+					START WITH PARENT_BD_ID IS NULL
+					CONNECT BY PRIOR BD_ID = PARENT_BD_ID
+					ORDER SIBLINGS BY REG_DT DESC
+					
+				) T
+			<![CDATA[WHERE ROWNUM <= #{length} * #{page}]]>
+		) P
+		<![CDATA[WHERE RNUM >= (#{length} * #{page}) - (#{length} - 1)]]>
+	</select>
+	
+	<!-- ===== -->
+	<!-- 글등록 -->
+	<!-- ===== -->
+	<insert id="insertBoardDetailAjax" 
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyBoardDtlPVO">
+		INSERT INTO /* AnonyMembersMapper.insertBoardDetailAjax */
+			ANONY_BOARD_DTL (
+				BD_ID,
+				BM_ID,
+				PARENT_BD_ID,
+				TITLE,
+				REG_ID,
+				CONTENT,
+				REG_DT,
+				REG_IP,
+				DEL_YN
+			) VALUES (
+				ANONY_BOARD_DTL_BD_ID_SEQ.NEXTVAL,
+				#{bmId},
+				#{parentBdId},
+				#{title},
+				#{regId},
+				#{content},
+				CURRENT_TIMESTAMP,
+				#{regIp},
+				'N'
+			)
+	</insert>
+	
+	<!-- ================= -->
+	<!-- 게시글 상세 조회 -->
+	<!-- @author minam.cho -->
+	<!-- ================= -->
+	<select id="selectAnonyBoardDtl"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyBoardDtlPVO"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyBoardDtlRVO">
+		SELECT /* AnonyMembersMapper.selectMemberById */
+			BD_ID,
+			BM_ID,
+			PARENT_BD_ID,
+			CONTENT,
+			TITLE,
+			REG_ID,
+			REF_DEPTH,
+			NOTICE_YN,
+			AGREE_CNT,
+			OPPOSITE_CNT,
+			READ_CNT,
+			REG_DT,
+			UPD_DT
+		FROM
+			ANONY_BOARD_DTL
+		WHERE
+				BM_ID = #{bmId}
+			AND BD_ID = #{bdId}
+	</select>
+
+	<!-- TODO -->
+	<select id="selectBoardList"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyBoardPVO"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyBoardRVO">
+	</select>
+
+	<!-- 게시글 수정 -->
+	<update id="updateBoardDetailAjax"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyBoardDtlPVO">
+		UPDATE /* AnonyMembersMapper.updateBoardDetailAjax */
+			ANONY_BOARD_DTL
+
+		SET
+			TITLE = #{title},
+			CONTENT = #{content},
+			UPD_DT = CURRENT_TIMESTAMP,
+			UPD_ID = #{updId},
+			UPD_IP = #{updIp}
+
+		WHERE
+				BM_ID = #{bmId}
+			AND BD_ID = #{bdId}
+	</update>
+
+	<!--=======================-->
+	<!-- * 게시판 정보 (단건) 조회 -->
+	<!--=======================-->
+	<select id="selectAnonyBoard" parameterType="string"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyBoardRVO">
+		SELECT  /* AnonyMembersMapper.selectAnonyBoard */
+			BM_ID,
+			NM
+		FROM
+			ANONY_BOARD
+		WHERE BM_ID = #{bmId}
+	</select>
+
+	<!--=========-->
+	<!-- 댓글 입력 -->
+	<!--=========-->
+	<insert id="insertBoardComment" parameterType="kr.or.devbada.freeBoards.domain.AnonyBoardCommentsPVO">
+		INSERT  /* AnonyMembersMapper.insertBoardComment */
+		INTO
+			ANONY_BOARD_COMMENTS 
+		(
+			ID,
+			PARENT,
+			CREATED,
+			MODIFIED,
+			CONTENT,
+			ATTACHMENTS,
+			PINGS,
+			CREATOR,
+			FULLNAME,
+			PROFILE_PICTURE_URL,
+			IS_NEW,
+			CREATED_BY_ADMIN,
+			CREATED_BY_CURRENT_USER,
+			UPVOTE_COUNT,
+			USER_HAS_UPVOTED,
+			BD_ID
+		) VALUES (
+			#{id},
+			#{parent},
+			#{created},
+			#{modified},
+			#{content},
+			#{attachments},
+			#{pings},
+			#{creator},
+			#{fullname},
+			#{profilePictureUrl},
+			#{isNew},
+			#{createdByAdmin},
+			#{createdByCurrentUser},
+			#{upvoteCount},
+			#{userHasUpvoted},
+			#{bdId}
+		)
+
+	</insert>
+</mapper>

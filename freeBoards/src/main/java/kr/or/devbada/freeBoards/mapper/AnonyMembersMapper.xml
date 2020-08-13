@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.devbada.freeBoards.mapper.AnonyMembersMapper">
+	<!-- ===================================================== -->
+	<!-- 단건의 사용자 정보를 조회 -->
+	<!-- @author minam.cho -->
+	<select id="selectMemberById"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyMembersPVO"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyMembersRVO">
+			SELECT /* AnonyMembersMapper.selectMemberById */
+				MEM_ID,
+				MEM_PWD,
+				NAME,
+				NICK_NAME,
+				EMAIL,
+				STATUS,
+				JOIN_CERTIFIED_KEY,
+				JOIN_CERTIFIED_DT,
+				REG_DT,
+				REG_ID,
+				UPD_DT,
+				UPD_ID,
+				LEV_DT,
+				LAST_LOGIN_DT,
+				ROLE
+			FROM
+				ANONY_MEMBERS
+			WHERE MEM_ID = #{memId}
+	</select>
+	
+	<!-- ========= -->
+	<!-- 사용자 등록 -->
+	<!-- ========= -->
+	<insert id="insertAnonyMember"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyMembersPVO">
+		INSERT /* AnonyMembersMapper.insertAnonyMember */
+		INTO ANONY_MEMBERS(
+			MEM_ID,
+			MEM_PWD,
+			NAME,
+			NICK_NAME,
+			EMAIL,
+			STATUS,
+			JOIN_CERTIFIED_KEY,
+			JOIN_CERTIFIED_DT,
+			REG_DT,
+			REG_ID,
+			UPD_DT,
+			UPD_ID,
+			LEV_DT,
+			LAST_LOGIN_DT,
+			ROLE
+		) VALUES (
+			#{memId},
+			#{memPwd},
+			#{name},
+			#{nickName},
+			#{email},
+			#{status},
+			#{joinCertifiedKey},
+			null,
+			CURRENT_TIMESTAMP,
+			#{regId},
+			null,
+			null,
+			null,
+			null,
+			'USER'
+		)
+	</insert>
+
+	<!-- ============================ -->
+	<!-- 가입을 위한 단건의 사용자 정보를 조회 -->
+	<!-- @author minam.cho -->
+	<select id="selectMemberByMail"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyMembersPVO"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyMembersRVO">
+		SELECT /* AnonyMembersMapper.selectMemberByMail */
+			MEM_ID,
+			MEM_PWD,
+			NAME,
+			NICK_NAME,
+			EMAIL,
+			STATUS,
+			JOIN_CERTIFIED_KEY,
+			JOIN_CERTIFIED_DT,
+			REG_DT,
+			REG_ID,
+			UPD_DT,
+			UPD_ID,
+			LEV_DT,
+			LAST_LOGIN_DT,
+			ROLE
+		FROM
+			ANONY_MEMBERS
+		WHERE EMAIL = #{email}
+	</select>
+
+	<!-- ============================ -->
+	<!-- 단건의 사용자 정보를 조회 -->
+	<!-- @author minam.cho -->
+	<select id="selectMemberByOne"
+		parameterType="kr.or.devbada.freeBoards.domain.AnonyMembersPVO"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyMembersRVO">
+		SELECT /* AnonyMembersMapper.selectMemberByOne */
+			MEM_ID,
+			MEM_PWD,
+			NAME,
+			NICK_NAME,
+			EMAIL,
+			STATUS,
+			JOIN_CERTIFIED_KEY,
+			JOIN_CERTIFIED_DT,
+			REG_DT,
+			REG_ID,
+			UPD_DT,
+			UPD_ID,
+			LEV_DT,
+			LAST_LOGIN_DT,
+			ROLE
+		FROM
+			ANONY_MEMBERS
+		WHERE EMAIL = #{email}
+		<if test="memId != null">
+			AND MEM_ID = #{memId}
+		</if>
+		
+	</select>
+
+	<!--================================-->
+	<!-- 등록 인증키를 이용하여 등록 사용자 조회 -->
+	<!--================================-->
+	<select id="selectMemberByJoinCertifiedKey"
+		parameterType="string"
+		resultType="kr.or.devbada.freeBoards.domain.AnonyMembersRVO">
+		SELECT /* AnonyMembersMapper.selectMemberByJoinCertifiedKey */
+			MEM_ID,
+			JOIN_CERTIFIED_KEY,
+			STATUS
+		FROM
+			ANONY_MEMBERS
+		WHERE
+			JOIN_CERTIFIED_KEY = #{joinCertifiedKey}
+	</select>
+
+	<!--==============================================-->
+	<!-- 등록 인증키를 이용하여 등록 사용자 업데이트(최종 등록처리) -->
+	<!--==============================================-->
+	<update id="updateAnonyMemberByJoinCertifiedKey" parameterType="string">
+		UPDATE /* AnonyMembersMapper.updateAnonyMemberByJoinCertifiedKey */
+			ANONY_MEMBERS
+		SET
+			JOIN_CERTIFIED_DT = CURRENT_TIMESTAMP,
+			STATUS = 'A'
+		WHERE
+			JOIN_CERTIFIED_KEY = #{joinCertifiedKey}
+		AND STATUS = 'R'
+	</update>
+
+	<!--==============================================-->
+	<!-- 등록 인증키를 이용하여 등록 사용자 업데이트(비밀번호 재설정) -->
+	<!--==============================================-->
+	<update id="updateAnonyMemberByJoinCertifiedKeyForResetLoginInfo" parameterType="string">
+		UPDATE /* AnonyMembersMapper.updateAnonyMemberByJoinCertifiedKeyForResetLoginInfo */
+			ANONY_MEMBERS
+		SET
+			JOIN_CERTIFIED_DT = CURRENT_TIMESTAMP,
+			STATUS = 'A'
+		WHERE
+			JOIN_CERTIFIED_KEY = #{joinCertifiedKey}
+		AND STATUS = 'P'
+	</update>
+
+	<!--==============================-->
+	<!-- 인증 후 이메일 변경을 위해 사용한다. -->
+	<!--==============================-->
+	<update id="updateMemberPasswordAfterJoin" parameterType="kr.or.devbada.freeBoards.dto.JoinDto">
+		UPDATE /* AnonyMembersMapper.updateMemberPasswordAfterJoin */
+			ANONY_MEMBERS
+		SET
+			MEM_PWD = #{password},
+			JOIN_CERTIFIED_KEY = 'CERTIFIED',
+			UPD_DT = CURRENT_TIMESTAMP,
+			UPD_ID = 'JOIN_CERTIFIED'
+
+		WHERE
+			JOIN_CERTIFIED_KEY = #{joinCertifiedKey}
+		
+	</update>
+
+	<!--==================-->
+	<!-- 로그인 기록을 남긴다. -->
+	<!--==================-->
+	<insert id="insertMemberLoginLog" parameterType="kr.or.devbada.freeBoards.domain.AnonyMemberLoginPVO">
+		INSERT /* AnonyMembersMapper.insertMemberLoginLog */
+		INTO
+			ANONY_MEMBER_LOGIN
+		(
+			LOGIN_KEY,
+			MEM_ID,
+			SUCCES_YN,
+			LOGIN_DT,
+			REMOTE_IP
+		) VALUES (
+			#{loginKey},
+			#{memId},
+			#{successYn},
+			CURRENT_TIMESTAMP,
+			#{remoteIp}
+		)
+
+	</insert>
+
+	<!--==============-->
+	<!-- 사용자 정보 수정 -->
+	<!--==============-->
+	<update id="updateAnonyMember" parameterType="kr.or.devbada.freeBoards.domain.AnonyMemberLoginPVO">
+		UPDATE /* AnonyMembersMapper.insertMemberLoginLog */
+			ANONY_MEMBERS
+		<set>
+			<if test="memPwd != null">MEM_PWD=#{memPwd},</if>
+			<if test="name != null">NAME=#{name},</if>
+			<if test="nickName != null">NICK_NAME=#{nickName},</if>
+			<if test="status != null">STATUS=#{status},</if>
+			<if test="role != null">ROLE=#{role},</if>
+			<if test="joinCertifiedKey != null">JOIN_CERTIFIED_KEY = #{joinCertifiedKey},</if>
+			UPD_DT=CURRENT_TIMESTAMP,
+			UPD_ID=#{updId}
+		</set>
+
+		WHERE EMAIL=#{email}
+	</update>
+</mapper>

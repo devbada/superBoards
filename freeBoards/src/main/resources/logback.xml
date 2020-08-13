@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy/MM/dd HH:mm:ss.SSS} [%thread] %-3level %logger{5} - %msg %n</pattern>
+		</encoder>
+	</appender>
+  
+	<logger name="jdbc" level="OFF"/>
+	
+	<logger name="cfd.comn" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+		
+	</logger> 
+  
+	<logger name="com.zaxxer.hikari" level="ERROR" additivity="false">   			
+		<appender-ref ref="STDOUT" />   			
+		   		
+	</logger>
+    
+	<logger name="kr.or.devbada" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="org.springframework.boot" level="ERROR" additivity="false">
+		<appender-ref ref="STDOUT" />
+		
+	</logger>
+	
+	<logger name="org.springframework.core" level="ERROR" additivity="false">
+		<appender-ref ref="STDOUT" />
+		
+	</logger>
+	
+	<logger name="org.springframework.web.client" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+		
+	</logger>
+	
+	<logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>  
+	  
+	<!-- <logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>  -->
+	
+	<root level="ERROR">
+		<appender-ref ref="STDOUT" />
+  	</root>
+</configuration>
