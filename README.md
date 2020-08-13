@@ -9,3 +9,9 @@ Boards Default Template by devbada
   3. 게시판 기본 기능
 
 등등
+
+INSTALL (LOCAL)
+> $mvn clean install -Plocal -DBuildEnv=local
+ 
+INSTALL (DEV)
+> $mvn clean install -Pdev -DBuildEnv=dev
